@@ -5,6 +5,10 @@ import mdx from "@astrojs/mdx";
 const fontDir = "./src/assets/fonts";
 
 export default defineConfig({
+  // GitHub Pages: https://fourbier-max.github.io/teatro-regio/
+  site: "https://fourbier-max.github.io",
+  base: "/teatro-regio",
+
   fonts: [
     {
       // Lauftext / Fließtext
