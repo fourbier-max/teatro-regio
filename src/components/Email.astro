@@ -1,0 +1,21 @@
+---
+// E-Mail-Adresse, die erst im Browser zusammengesetzt wird – Spam-Bots,
+// die nur das HTML lesen, finden sie so nicht (wie auf der alten Seite).
+interface Props {
+    name: string;
+    domain: string;
+}
+const { name, domain } = Astro.props;
+---
+
+<span class="email" data-name={name} data-domain={domain}>Bitte aktivieren Sie JavaScript, um die E-Mail-Adresse zu sehen.</span>
+
+<script>
+    document.querySelectorAll<HTMLElement>('.email').forEach((el) => {
+        const adresse = `${el.dataset.name}@${el.dataset.domain}`;
+        const link = document.createElement('a');
+        link.href = `mailto:${adresse}`;
+        link.textContent = adresse;
+        el.replaceChildren(link);
+    });
+</script>

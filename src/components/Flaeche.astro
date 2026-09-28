@@ -1,9 +1,14 @@
 ---
 import { Image } from 'astro:assets';
 import woodsPano from '../assets/img/woods-pano.jpg';
+
+interface Props {
+    ohneAbstand?: boolean; // ohne Abstand oben und unten, z. B. direkt unter dem Titel
+}
+const { ohneAbstand = false } = Astro.props;
 ---
 
-<Image class="flaeche" src={woodsPano} alt="" widths={[600, 1200, 2000]} sizes="100vw" />
+<Image class:list={['flaeche', { 'ohne-abstand': ohneAbstand }]} src={woodsPano} alt="" widths={[600, 1200, 2000]} sizes="100vw" />
 
 <style>
     .flaeche {
@@ -14,5 +19,9 @@ import woodsPano from '../assets/img/woods-pano.jpg';
         height: 300px;
         object-fit: cover;
         filter: brightness(50%);
+    }
+    .ohne-abstand {
+        margin-top: 0;
+        margin-bottom: 0;
     }
 </style>

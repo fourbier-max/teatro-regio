@@ -1,0 +1,197 @@
+---
+import wald from '../assets/img/wald shape2.svg';
+
+const jahr = new Date().getFullYear();
+---
+
+<footer class="footer">
+    <div class="footer-inhalt">
+        <div class="footer-text label">
+            <div>
+                <a href="#start">teatro regio e. V.</a><br />
+                Northeim
+            </div>
+            <ul>
+                <li><a href="#kontakt">Kontakt</a></li>
+                <li><a href="#satzung">Vereinssatzung</a></li>
+                <li><a href="#impressum">Impressum</a></li>
+                <li><a href="#datenschutz">Datenschutz</a></li>
+            </ul>
+            <div>©{jahr} teatro regio</div>
+            <div class="footer-credits">
+                Design und Umsetzung:<br />
+                <a href="https://lmbmt.com" target="_blank" rel="noopener noreferrer">LMBMT</a>
+            </div>
+        </div>
+
+        <div class="footer-karte" data-marker={wald.src}>
+            <div class="karte"></div>
+            <div class="karte-knoepfe">
+                <button type="button" class="karte-knopf" data-aktion="raus" aria-label="Herauszoomen">−</button>
+                <button type="button" class="karte-knopf" data-aktion="home" aria-label="Zurück zum Start">•</button>
+                <button type="button" class="karte-knopf" data-aktion="rein" aria-label="Hineinzoomen">+</button>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    const MITTE: [number, number] = [9.65244, 51.74566];
+    const ZOOM = 7.2;
+
+    // Mapbox ist groß (~1 MB) – erst laden, wenn der Footer in die Nähe kommt
+    async function karteStarten(container: HTMLElement) {
+        // Token kommt aus .env (lokal) bzw. der GitHub-Variable PUBLIC_MAPBOX_TOKEN (Deploy)
+        const token = import.meta.env.PUBLIC_MAPBOX_TOKEN;
+        if (!token) {
+            console.warn('PUBLIC_MAPBOX_TOKEN fehlt – Karte wird nicht geladen.');
+            return;
+        }
+
+        const [{ default: mapboxgl }] = await Promise.all([
+            import('mapbox-gl'),
+            import('mapbox-gl/dist/mapbox-gl.css'),
+        ]);
+
+        mapboxgl.accessToken = token;
+
+        const map = new mapboxgl.Map({
+            container: container.querySelector<HTMLElement>('.karte')!,
+            style: 'mapbox://styles/kaspargessner/cm98lop2l00j101r02gywapef',
+            center: MITTE,
+            zoom: window.innerWidth < 500 ? ZOOM - 1 : ZOOM,
+            scrollZoom: false,
+        });
+
+        // Wald-Form als Marker: wächst beim Hineinzoomen mit und wird dabei blasser.
+        // Mapbox positioniert das äußere Element per transform – skaliert wird nur das Bild darin,
+        // sonst würde die Skalierung auch die Position verschieben.
+        const marker = document.createElement('div');
+        const markerBild = document.createElement('img');
+        markerBild.src = container.dataset.marker!;
+        markerBild.alt = '';
+        markerBild.className = 'karte-marker';
+        marker.append(markerBild);
+        new mapboxgl.Marker({ element: marker }).setLngLat(MITTE).addTo(map);
+
+        function markerAnpassen() {
+            const faktor = Math.pow(2, map.getZoom() - ZOOM);
+            markerBild.style.opacity = String(0.3 / faktor);
+            markerBild.style.scale = String(faktor);
+        }
+        map.on('zoom', markerAnpassen);
+        markerAnpassen(); // auch beim Start (Handy beginnt eine Stufe weiter draußen)
+
+        container.querySelectorAll<HTMLButtonElement>('.karte-knopf').forEach((knopf) => {
+            knopf.addEventListener('click', () => {
+                const aktion = knopf.dataset.aktion;
+                if (aktion === 'raus') map.zoomOut();
+                if (aktion === 'rein') map.zoomIn();
+                if (aktion === 'home') map.flyTo({ center: MITTE, zoom: ZOOM });
+            });
+        });
+    }
+
+    document.querySelectorAll<HTMLElement>('.footer-karte').forEach((container) => {
+        const beobachter = new IntersectionObserver(
+            ([eintrag]) => {
+                if (!eintrag.isIntersecting) return;
+                beobachter.disconnect();
+                karteStarten(container);
+            },
+            { rootMargin: '400px' },
+        );
+        beobachter.observe(container);
+    });
+</script>
+
+<style>
+    /* Farbe über die volle Fensterbreite, Inhalt höchstens 1000px */
+    .footer {
+        margin-top: 160px;
+        background: var(--color-dunkel);
+        color: white;
+    }
+    .footer-inhalt {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 24px;
+        max-width: 1000px;
+        margin: auto;
+        padding: 12px; /* wie Lauftext, damit alles bündig steht */
+        padding-top: 80px;
+        padding-bottom: 80px; /* Platz, damit das Menü unten rechts nichts verdeckt */
+    }
+
+    .footer-text {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+    .footer-text ul {
+        list-style: none;
+    }
+    .footer-text a {
+        color: inherit;
+        text-decoration: none;
+    }
+    .footer-text a:hover {
+        text-decoration: underline;
+    }
+    .footer-credits {
+        margin-top: auto;
+    }
+
+    .footer-karte {
+        position: relative;
+    }
+    .karte {
+        height: 400px;
+    }
+
+    /* Der Marker wird per Script erzeugt, daher :global */
+    .footer-karte :global(.karte-marker) {
+        display: block; /* keine Unterlängen-Lücke unter dem Bild, sonst sitzt die Mitte zu hoch */
+        width: 108px;
+        height: 108px;
+        opacity: 0.3;
+    }
+
+    .karte-knoepfe {
+        position: absolute;
+        bottom: 10px;
+        left: 0;
+        right: 0;
+        z-index: 2;
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        pointer-events: none;
+    }
+    .karte-knopf {
+        pointer-events: auto;
+        width: 41px;
+        border: 1px solid var(--color-clickable);
+        border-radius: 3rem;
+        background: color-mix(in srgb, var(--color-clickable) 20%, transparent);
+        color: var(--color-clickable);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 1.5rem;
+        font-weight: 100;
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.2s;
+    }
+    .karte-knopf:hover {
+        background: color-mix(in srgb, var(--color-clickable) 35%, transparent);
+    }
+
+    @media (max-width: 600px) {
+        .footer-inhalt {
+            grid-template-columns: 1fr;
+        }
+        .footer-karte {
+            order: -1; /* Karte oben, Text darunter */
+        }
+    }
+</style>

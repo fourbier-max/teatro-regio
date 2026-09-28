@@ -26,6 +26,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+        env:
+          # öffentlicher Mapbox-Token, hinterlegt unter Settings → Secrets and variables → Actions → Variables
+          PUBLIC_MAPBOX_TOKEN: ${{ vars.PUBLIC_MAPBOX_TOKEN }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

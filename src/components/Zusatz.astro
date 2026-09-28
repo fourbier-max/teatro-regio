@@ -1,0 +1,125 @@
+---
+import Flaeche from './Flaeche.astro';
+
+// Aufklappbarer Zusatz-Bereich (Kontakt, Satzung, Impressum, Datenschutz).
+// Anfangs versteckt; ein Link auf #id – im Menü, Footer oder direkt in der Adresse –
+// zeigt ihn an und blendet die anderen aus. Inhalt als Markdown im Slot.
+interface Props {
+    id: string;
+    klein?: boolean; // kleinere Schrift für lange Rechtstexte
+}
+
+const { id, klein = false } = Astro.props;
+---
+
+<!-- Die Bildfläche gehört zum Bereich: Sie erscheint nur, wenn er angezeigt wird -->
+<section class="zusatz" id={id} hidden>
+    <Flaeche />
+    <div class:list={['zusatz-inhalt', { 'zusatz-klein': klein }]}>
+        <slot />
+        <button type="button" class="zusatz-schliessen label">Schließen ×</button>
+    </div>
+</section>
+
+<script>
+    const bereiche = [...document.querySelectorAll<HTMLElement>('.zusatz')];
+
+    function zeige(ziel: HTMLElement | null) {
+        bereiche.forEach((bereich) => (bereich.hidden = bereich !== ziel));
+    }
+
+    // Capture-Phase: läuft vor dem Klick-Handler des Menüs, der danach zum Ziel scrollt
+    document.addEventListener(
+        'click',
+        (event) => {
+            const link = (event.target as Element).closest<HTMLAnchorElement>('a[href^="#"]');
+            if (!link) return;
+            const ziel = bereiche.find((bereich) => `#${bereich.id}` === link.hash);
+            if (ziel) zeige(ziel);
+        },
+        true,
+    );
+
+    // Direkter Aufruf, z. B. …/teatro-regio/#impressum
+    const start = bereiche.find((bereich) => `#${bereich.id}` === location.hash);
+    if (start) {
+        zeige(start);
+        start.scrollIntoView();
+    }
+
+    bereiche.forEach((bereich) => {
+        bereich.querySelector('.zusatz-schliessen')!.addEventListener('click', () => {
+            bereich.hidden = true;
+            history.replaceState(null, '', location.pathname);
+        });
+    });
+</script>
+
+<style>
+    .zusatz[hidden] {
+        display: none;
+    }
+
+    .zusatz-inhalt {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        max-width: 1000px;
+        margin: auto;
+        padding: 12px;
+        font-family: var(--font-text);
+        font-size: var(--size-lauftext);
+        letter-spacing: -5%;
+    }
+    /* Rechtstexte: kleiner, normale Laufweite, gut lesbare Zeilenlänge */
+    .zusatz-klein {
+        font-size: 20px;
+        line-height: 1.4;
+        letter-spacing: normal;
+    }
+
+    .zusatz :global(h2) {
+        margin-bottom: 8px;
+        font-family: var(--font-text);
+        font-size: 34px;
+        font-weight: 400;
+        line-height: 1.05;
+        letter-spacing: -5%;
+        text-transform: uppercase;
+    }
+    .zusatz :global(h3) {
+        margin-top: 24px;
+        font-family: var(--font-text);
+        font-size: 1.4em;
+        font-weight: 400;
+    }
+    .zusatz :global(h4) {
+        margin-top: 12px;
+        font-family: var(--font-text);
+        font-size: 1em;
+        font-weight: 400;
+        font-style: italic;
+    }
+    .zusatz :global(ul) {
+        padding-left: 1.2em;
+    }
+    .zusatz :global(a) {
+        color: inherit;
+    }
+
+    .zusatz-schliessen {
+        margin-top: 16px;
+        padding: 6px 16px;
+        border: 0;
+        border-radius: 30px;
+        background: var(--color-clickable);
+        color: black;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .zusatz-schliessen:hover,
+    .zusatz-schliessen:focus-visible {
+        color: white;
+    }
+</style>

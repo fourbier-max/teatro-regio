@@ -1,5 +1,12 @@
+---
+interface Props {
+    ueberBild?: boolean; // kein Platzhalter: der Titel liegt über dem ersten Element (z. B. einer Bildfläche)
+}
+const { ueberBild = false } = Astro.props;
+---
+
 <!-- Platzhalter im Seitenfluss: hält oben Platz frei, der Titel selbst ist fixiert -->
-<header class="kopf" id="start">
+<header class:list={['kopf', { 'kopf-ueber-bild': ueberBild }]} id="start">
     <h1 class="kopf-titel">teatro<span class="kopf-kursiv">regio</span></h1>
 </header>
 
@@ -20,6 +27,9 @@
         --kopf-klein: 60px;
 
         height: calc(var(--kopf-gross) + 2 * var(--inset));
+    }
+    .kopf-ueber-bild {
+        height: 0;
     }
 
     .kopf-titel {

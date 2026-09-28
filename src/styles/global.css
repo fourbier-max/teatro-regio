@@ -5,6 +5,7 @@
   --color-clickable: rgb(163, 205, 66);  
   /* --color-clickable: #e17d93; */
   --color-highlight: #e17d93;
+  --color-dunkel: #272a40; /* Footer */
   --inset: clamp(12px, 3vw, 40px); /* Abstand zum Fensterrand */
 
   /* Schriftgrößen */

@@ -7,10 +7,10 @@
 		<li><a class="menu-link" href="#start">Home</a></li>
 		<li><a class="menu-link" href="#aktuelles">Aktuelle Termine</a></li>
 		<li class="menu-break" aria-hidden="true"></li>
-		<li><a class="menu-link" href="#kontakt" data-panel>Kontakt</a></li>
-		<li><a class="menu-link" href="#satzung" data-panel>Vereinssatzung</a></li>
-		<li><a class="menu-link" href="#impressum" data-panel>Impressum</a></li>
-		<li><a class="menu-link" href="#datenschutz" data-panel>Datenschutz</a></li>
+		<li><a class="menu-link" href="#kontakt">Kontakt</a></li>
+		<li><a class="menu-link" href="#satzung">Vereinssatzung</a></li>
+		<li><a class="menu-link" href="#impressum">Impressum</a></li>
+		<li><a class="menu-link" href="#datenschutz">Datenschutz</a></li>
 		<li class="menu-break" aria-hidden="true"></li>
 		<li>
 			<button class="menu-link menu-close" type="button" aria-label="Menü schließen">×</button>
@@ -139,13 +139,8 @@
 		if (event.key === 'Escape') setOpen(false);
 	});
 
-	// Kontakt, Satzung, Impressum und Datenschutz sind Zusatz-Bereiche,
-	// von denen immer nur der gewählte sichtbar ist.
-	const panelLinks = menu.querySelectorAll<HTMLAnchorElement>('[data-panel]');
-	const panels = [...panelLinks]
-		.map((link) => document.querySelector<HTMLElement>(link.hash))
-		.filter((panel) => panel !== null);
-
+	// Kontakt, Satzung, Impressum und Datenschutz blendet Zusatz.astro ein
+	// (vor diesem Handler, damit das Ziel beim Scrollen schon sichtbar ist).
 	menu.querySelectorAll<HTMLAnchorElement>('a.menu-link').forEach((link) => {
 		link.addEventListener('click', (event) => {
 			const target = document.querySelector<HTMLElement>(link.hash);
@@ -153,9 +148,6 @@
 			if (!target) return;
 
 			event.preventDefault();
-			if (link.hasAttribute('data-panel')) {
-				panels.forEach((panel) => (panel.hidden = panel !== target));
-			}
 			target.scrollIntoView({ behavior: 'smooth' });
 			history.replaceState(null, '', link.hash);
 		});

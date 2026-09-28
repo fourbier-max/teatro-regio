@@ -1,0 +1,82 @@
+---
+import { Image } from 'astro:assets';
+import Titel2 from './Titel2.astro';
+import akb from '../assets/img/sponsors/akb-stiftung.svg';
+import landkreisNortheim from '../assets/img/cropped-Design-ohne-Titel-38-2.png';
+import bmfsfj from '../assets/img/sponsors/bmfsfj.svg';
+import demokratieLeben from '../assets/img/sponsors/demokratie-leben.jpg';
+import landschaftsverband from '../assets/img/sponsors/landschaftsverband-suedniedersachsen.svg';
+import lotto from '../assets/img/sponsors/lotto-sport-stiftung.svg';
+import nothilfefonds from '../assets/img/sponsors/sponsor_logo9.jpg';
+import klosterkammer from '../assets/img/sponsors/klosterkammer.png';
+import hediKupfer from '../assets/img/sponsors/hedi-kupfer-stiftung.jpg';
+import sparkasse from '../assets/img/sponsors/sparkasse_northeim.jpg';
+import kgsMoringen from '../assets/img/sponsors/kgs-moringen.png';
+
+// Reihenfolge wie auf der alten Seite. Der Name dient als Alt-Text.
+const logos = [
+    { src: akb, name: 'AKB Stiftung' },
+    { src: landkreisNortheim, name: 'Kultur- und Denkmalstiftung Landkreis Northeim' },
+    { src: bmfsfj, name: 'Bundesministerium für Familie, Senioren, Frauen und Jugend' },
+    { src: demokratieLeben, name: 'Demokratie leben!' },
+    { src: landschaftsverband, name: 'Landschaftsverband Südniedersachsen' },
+    { src: lotto, name: 'Niedersächsische Lotto-Sport-Stiftung' },
+    { src: nothilfefonds, name: 'Nothilfefonds für Flüchtlinge – Bistum Hildesheim und Caritas' },
+    { src: klosterkammer, name: 'Klosterkammer Hannover' },
+    { src: hediKupfer, name: 'Hedi Kupfer Stiftung' },
+    { src: sparkasse, name: 'Kreis-Sparkasse Northeim' },
+    { src: kgsMoringen, name: 'Kooperative Gesamtschule Moringen' },
+];
+---
+
+<section class="foerderer">
+    <Titel2>Unsere Förderer und Kooperations&shy;partner</Titel2>
+    <ul class="foerderer-logos">
+        {logos.map((logo) => (
+            <li>
+                <Image src={logo.src} alt={logo.name} width={400} />
+            </li>
+        ))}
+    </ul>
+</section>
+
+<style>
+    .foerderer {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        max-width: 1000px;
+        margin: auto;
+        padding: 12px;
+        font-family: var(--font-text);
+        font-size: var(--size-lauftext);
+        letter-spacing: -5%;
+    }
+
+    .foerderer-logos {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        list-style: none;
+    }
+
+    /* Alle Logos in gleich großen Kacheln, damit die unterschiedlichen Formate ruhig wirken */
+    .foerderer-logos li {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        width: 200px;
+        max-width: calc(50% - 6px); /* auf dem Handy zwei nebeneinander */
+        aspect-ratio: 5 / 3;
+        padding: 16px;
+        border: 1px solid lightgray;
+        background: white;
+    }
+
+    .foerderer-logos img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+</style>
