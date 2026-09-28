@@ -1,0 +1,163 @@
+<nav class="menu is-closed" aria-label="Hauptmenü">
+	<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-list">
+		<span class="menu-toggle-label">menu</span>
+	</button>
+
+	<ul class="menu-list" id="menu-list">
+		<li><a class="menu-link" href="#start">Home</a></li>
+		<li><a class="menu-link" href="#aktuelles">Aktuelle Termine</a></li>
+		<li class="menu-break" aria-hidden="true"></li>
+		<li><a class="menu-link" href="#kontakt" data-panel>Kontakt</a></li>
+		<li><a class="menu-link" href="#satzung" data-panel>Vereinssatzung</a></li>
+		<li><a class="menu-link" href="#impressum" data-panel>Impressum</a></li>
+		<li><a class="menu-link" href="#datenschutz" data-panel>Datenschutz</a></li>
+		<li class="menu-break" aria-hidden="true"></li>
+		<li>
+			<button class="menu-link menu-close" type="button" aria-label="Menü schließen">×</button>
+		</li>
+	</ul>
+</nav>
+
+<style>
+	.menu {
+		--menu-hover: #ffffff;
+
+		position: fixed;
+		right: var(--inset);
+		bottom: 50px;
+		z-index: 99;
+		width: calc(100% - 2 * var(--inset));
+		height: clamp(260px, 627px - 33.33vw, 460px);
+		overflow: hidden;
+		background: var(--color-clickable);
+		border-radius: 30px;
+		font-family: var(--font-heading);
+		font-weight: 300;
+		transition:
+			width 0.25s cubic-bezier(0.5, 0, 1, 0.5),
+			height 0.25s cubic-bezier(0.5, 0, 1, 0.5);
+	}
+
+	.menu.is-closed {
+		width: clamp(50px, 40px + 2vw, 60px);
+		height: clamp(170px, 150px + 2vw, 180px);
+	}
+
+	/* Geschlossener Zustand: senkrechter Schriftzug „menu“ */
+	.menu-toggle {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
+		border: 0;
+		background: none;
+		color: inherit;
+		font: inherit;
+		font-size: clamp(22px, 20px + 0.5vw, 26px);
+		writing-mode: vertical-rl;
+		transform: rotate(180deg);
+		cursor: pointer;
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity 0.5s, visibility 0s 0.5s, color 0.2s;
+	}
+
+	/* Nur der Schriftzug wird verschoben, die Klickfläche bleibt.
+	   Der Button ist um 180° gedreht, daher +20px = optisch 20px nach links. */
+	.menu-toggle-label {
+		translate: 10px 0;
+	}
+
+	.is-closed .menu-toggle {
+		opacity: 1;
+		visibility: visible;
+		transition: opacity 0.5s, visibility 0s, color 0.2s;
+	}
+
+	.menu-toggle:hover,
+	.menu-toggle:focus-visible {
+		color: var(--menu-hover);
+	}
+
+	/* Geöffneter Zustand: Menüpunkte */
+	.menu-list {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		align-content: flex-start;
+		padding: 12px;
+		list-style: none;
+		font-size: clamp(38px, 33px + 1vw, 43px);
+		transition: opacity 0.5s 0.25s, visibility 0s 0.25s;
+	}
+
+	.is-closed .menu-list {
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity 0.2s, visibility 0s 0.2s;
+	}
+
+	.menu-break {
+		flex-basis: 100%;
+	}
+
+	.menu-link {
+		display: inline-block;
+		min-width: 30px;
+		padding: 0 16px;
+		border: 0;
+		border-radius: 2rem;
+		background: none;
+		color: inherit;
+		font: inherit;
+		line-height: 1.4;
+		text-decoration: none;
+		cursor: pointer;
+		transition: background 0.2s;
+	}
+
+	.menu-link:hover,
+	.menu-link:focus-visible {
+		background: var(--menu-hover);
+	}
+</style>
+
+<script>
+	const menu = document.querySelector<HTMLElement>('.menu')!;
+	const toggle = menu.querySelector<HTMLButtonElement>('.menu-toggle')!;
+
+	function setOpen(open: boolean) {
+		menu.classList.toggle('is-closed', !open);
+		toggle.setAttribute('aria-expanded', String(open));
+	}
+
+	toggle.addEventListener('click', () => setOpen(true));
+	menu.querySelector('.menu-close')!.addEventListener('click', () => setOpen(false));
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape') setOpen(false);
+	});
+
+	// Kontakt, Satzung, Impressum und Datenschutz sind Zusatz-Bereiche,
+	// von denen immer nur der gewählte sichtbar ist.
+	const panelLinks = menu.querySelectorAll<HTMLAnchorElement>('[data-panel]');
+	const panels = [...panelLinks]
+		.map((link) => document.querySelector<HTMLElement>(link.hash))
+		.filter((panel) => panel !== null);
+
+	menu.querySelectorAll<HTMLAnchorElement>('a.menu-link').forEach((link) => {
+		link.addEventListener('click', (event) => {
+			const target = document.querySelector<HTMLElement>(link.hash);
+			setOpen(false);
+			if (!target) return;
+
+			event.preventDefault();
+			if (link.hasAttribute('data-panel')) {
+				panels.forEach((panel) => (panel.hidden = panel !== target));
+			}
+			target.scrollIntoView({ behavior: 'smooth' });
+			history.replaceState(null, '', link.hash);
+		});
+	});
+</script>

@@ -1,5 +1,7 @@
 import { defineConfig, fontProviders } from "astro/config";
 
+import mdx from "@astrojs/mdx";
+
 const fontDir = "./src/assets/fonts";
 
 export default defineConfig({
@@ -39,4 +41,6 @@ export default defineConfig({
       },
     },
   ],
+
+  integrations: [mdx()],
 });

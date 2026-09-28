@@ -1,0 +1,127 @@
+---
+import { Image } from 'astro:assets';
+import kochen from '../assets/img/kochen.jpeg';
+import brennessel from '../assets/img/koch_Brenesselblätter ausgebacken.jpg';
+import lindenblaetter from '../assets/img/koch_Gefüllte Lindenblätter mit Pilzen Kartoffeln und Eichelmehl.jpg';
+import gerstenmus from '../assets/img/koch_Gerstenmus süss mit Löwenzahnsirup.jpg';
+import gruenkern from '../assets/img/koch_Grünkernrisoto mit Steinpilzen.jpg';
+import kraeuterquark from '../assets/img/koch_Kräuterquark mit Bärlauch, Gundermann, Giersch.jpg';
+import kraeuterspaziergang from '../assets/img/koch_Kräuterspaziergang in Fredelsloh.jpg';
+import loewenzahnmuffins from '../assets/img/koch_Löwenzahnmuffins.jpg';
+import steinpilzmuffins from '../assets/img/koch_Muffins mit Steinpilzen und Zitronenthymian.jpg';
+import himmelsscheibe from '../assets/img/IMG_4167.jpg';
+import baum from '../assets/img/IMG_4177.jpg';
+import brot from '../assets/img/brot.jpg';
+import weperwanderung from '../assets/img/koch_Weperwanderung.jpg';
+
+// Mehrere Zeilen in der Bildunterschrift: als Liste angeben
+const bilder = [
+    { src: kochen, titel: ['Sollinger Waldküche, 2025'] },
+    { src: brennessel, titel: ['Brennesselblätter ausgebacken'] },
+    { src: lindenblaetter, titel: ['Gefüllte Lindenblätter mit Pilzen, Kartoffeln und Eichelmehl'] },
+    { src: gerstenmus, titel: ['Gerstenmus süß mit Löwenzahnsirup'] },
+    { src: gruenkern, titel: ['Grünkernrisotto mit Steinpilzen'] },
+    { src: kraeuterquark, titel: ['Kräuterquark mit Bärlauch, Gundermann, Giersch'] },
+    { src: kraeuterspaziergang, titel: ['Kräuterspaziergang in Fredelsloh'] },
+    { src: loewenzahnmuffins, titel: ['Löwenzahnmuffins'] },
+    { src: steinpilzmuffins, titel: ['Muffins mit Steinpilzen und Zitronenthymian'] },
+    { src: himmelsscheibe, titel: ['Himmelsscheibe von Nebra', 'Brennesseltarte'] },
+    { src: baum, titel: ['Eßbarer Baum', 'Quark-Ölteig, frittierte Brennesselblätter, Körbchen gefüllt mit Grütze aus Waldbeeren'] },
+    { src: brot, titel: ['Waldpilze', 'Kartoffelpoffertjes mit Pilzfarce auf bunten Möhren, Waldboden aus Quark-Öl-Teig'] },
+    { src: weperwanderung, titel: ['Weperwanderung'] },
+];
+---
+
+<div class="galerie2 swiper">
+    <div class="swiper-wrapper">
+        {bilder.map((bild) => (
+            <figure class="swiper-slide">
+                <Image src={bild.src} alt="" widths={[600, 1200]} sizes="(max-width: 600px) 90vw, 800px" />
+                <figcaption class="label">
+                    {bild.titel.map((zeile, i) => (i > 0 ? <><br />{zeile}</> : zeile))}
+                </figcaption>
+            </figure>
+        ))}
+    </div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+</div>
+
+<script>
+    import Swiper from 'swiper';
+    import { Navigation, Keyboard } from 'swiper/modules';
+    import 'swiper/css';
+    import 'swiper/css/navigation';
+
+    document.querySelectorAll<HTMLElement>('.galerie2').forEach((el) => {
+        new Swiper(el, {
+            modules: [Navigation, Keyboard],
+            slidesPerView: 'auto',
+            spaceBetween: 12,
+            centeredSlides: true,
+            loop: true,
+            keyboard: { enabled: true },
+            navigation: {
+                nextEl: el.querySelector<HTMLElement>('.swiper-button-next'),
+                prevEl: el.querySelector<HTMLElement>('.swiper-button-prev'),
+            },
+        });
+    });
+</script>
+
+<style>
+    .galerie2 {
+        /* Pfeile über Swipers eigene Variablen – direktes left/right/margin-top überschreibt Swiper */
+        --swiper-navigation-color: black;
+        --swiper-navigation-size: 60px;
+        --swiper-navigation-sides-offset: var(--inset);
+        /* Pfeile mittig zum Bild, nicht zum ganzen Slider (Bildunterschrift abziehen) */
+        --swiper-navigation-top-offset: calc(50% - var(--caption-height) / 2);
+        --galerie-height: 90vh;
+        /* Platz für 2 Zeilen Bildunterschrift (6px + 2 × 24px) */
+        --caption-height: 54px;
+        box-sizing: border-box;
+        width: 100%;
+        height: var(--galerie-height);
+        padding: 12px 0;
+    }
+    .swiper-button-prev,
+    .swiper-button-next {
+        box-sizing: border-box;
+        padding: 18px;
+        background: var(--color-clickable);
+        border-radius: 40px;
+        transition: color 0.2s;
+    }
+    .swiper-button-prev:hover,
+    .swiper-button-next:hover {
+        color: white;
+    }
+    .swiper-slide {
+        width: auto;
+        margin: 0;
+    }
+    .swiper-slide img {
+        display: block;
+        width: auto;
+        /* Galeriehöhe minus Innenabstand (2 × 12px) und Bildunterschrift */
+        height: calc(var(--galerie-height) - 24px - var(--caption-height));
+        max-width: 90vw;
+        object-fit: cover;
+    }
+    figcaption {
+        box-sizing: border-box;
+        /* so breit wie das Bild – lange Texte machen die Slide nicht breiter */
+        width: 0;
+        min-width: 100%;
+        height: var(--caption-height);
+        padding-top: 6px;
+    }
+    @media (max-width: 600px) {
+        .galerie2 {
+            --galerie-height: 50vh;
+            /* schmalere Bilder → bis zu 4 Zeilen (6px + 4 × 24px) */
+            --caption-height: 102px;
+        }
+    }
+</style>

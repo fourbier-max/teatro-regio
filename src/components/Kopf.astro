@@ -1,0 +1,58 @@
+<!-- Platzhalter im Seitenfluss: hält oben Platz frei, der Titel selbst ist fixiert -->
+<header class="kopf" id="start">
+    <h1 class="kopf-titel">teatro<span class="kopf-kursiv">regio</span></h1>
+</header>
+
+<script>
+    const titel = document.querySelector<HTMLElement>('.kopf-titel')!;
+
+    function aktualisieren() {
+        titel.classList.toggle('is-klein', window.scrollY > 10);
+    }
+
+    window.addEventListener('scroll', aktualisieren, { passive: true });
+    aktualisieren();
+</script>
+
+<style>
+    .kopf {
+        --kopf-gross: min(120px, 14vw); /* auf schmalen Handys kleiner, damit es in die Zeile passt */
+        --kopf-klein: 60px;
+
+        height: calc(var(--kopf-gross) + 2 * var(--inset));
+    }
+
+    .kopf-titel {
+        position: fixed;
+        top: var(--inset);
+        left: 0;
+        z-index: 98; /* unter dem Menü (99) */
+        font-family: var(--font-heading);
+        font-weight: 300;
+        letter-spacing: -0%;
+        font-size: var(--kopf-gross);
+        line-height: 1;
+        white-space: nowrap;
+        /* Weiß mit „Differenz“: invertiert, was darunter liegt – auf Hell dunkel, auf Dunkel hell */
+        color: white;
+        /* hauchdünne Kontur: gleicht aus, dass „regio“ durch die größere Schrift kräftiger wirkt */
+        -webkit-text-stroke: 0.01em currentColor;
+        mix-blend-mode: difference;
+        pointer-events: none;
+        transition:
+            font-size 0.3s ease,
+            top 0.3s ease;
+    }
+
+    .kopf-kursiv {
+        font-family: var(--font-heading);
+        font-style: italic;
+        font-size: 1.12em; /* relativ zu „teatro“ – schrumpft beim Scrollen mit */
+        -webkit-text-stroke: 0;
+    }
+
+    .kopf-titel.is-klein {
+        top: 12px;
+        font-size: var(--kopf-klein);
+    }
+</style>

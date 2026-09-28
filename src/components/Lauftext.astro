@@ -1,14 +1,23 @@
-<div class="container">
-    <p>
-        Am liebsten sind wir zwischen Leinetal und Weserbergland unterwegs. Dort laden wir die Bewohnerinnen und Bewohner zum Theaterspiel ein. Wir machen neugierig auf das Spielfeld Theater und was sich darin für alltägliche und fantastische Lebenszusammenhänge beim Nachdenken, Imaginieren und Ausprobieren erkunden lassen. 
-    </p>
-    <p>
-        Wenn wir durch die Landschaft wandern, durchforsten wir sie nach Geschichten und Schicksalen für unsere Stücke. Die ganze Welt ist eine Bühne, die wir auf unserer Bühne befragen: Wie stellen wir uns unsere Zukunft vor? Wovon träumen wir? Was bewegt uns bei einem Blick auf unsere gemeinsame Welt? 
-    </p>
-    <p>
-        Alles kann zur Sprache und zum Ausdruck kommen in unseren Szenarien, mit denen wir für eine gleichberechtigte Zukunft aller Lebewesen begeistern möchten: Theater, Tanz, Schreiben, bildnerisches Gestalten, Kochkunst, Fotografie und Film. 
-    </p>
-    <p>
-         teatro regio ist so vielfältig wie die Region und ihre Menschen. 
-    </p>
+<div class="lauftext">
+    <slot />
 </div>
+
+
+<style>
+    .lauftext {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px;
+        max-width: 1000px;
+        margin: auto;
+        font-family: var(--font-text);
+        font-weight: 400;
+        font-size: var(--size-lauftext);
+        letter-spacing: -5%;
+    }
+    h2 {
+        font-weight: 400;
+        font-size: 34px;        
+    }
+</style>

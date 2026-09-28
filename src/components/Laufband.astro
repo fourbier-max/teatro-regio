@@ -1,0 +1,63 @@
+---
+// Inhalt kommt als Slot, z. B. <Laufband><LaufbandText /></Laufband>.
+// Einmal rendern, dann zweimal einsetzen.
+const inhalt = await Astro.slots.render('default');
+---
+
+<!-- Der Text steht zweimal hintereinander: Wenn die erste Kopie ganz durchgelaufen ist,
+     steht die zweite genau an ihrer Stelle – so springt die Animation unsichtbar zurück.
+     Die zweite Kopie ist für Screenreader ausgeblendet, damit der Satz nur einmal vorgelesen wird. -->
+<section class="laufband">
+    <div class="laufband-spur">
+        <div class="laufband-text" set:html={inhalt} />
+        <div class="laufband-text" aria-hidden="true" set:html={inhalt} />
+    </div>
+</section>
+
+<style>
+    .laufband {
+        --laufband-dauer: 20s; /* kleiner = schneller */
+
+        margin-top: 100px;
+        margin-bottom: 80px;
+        padding-top: 40px;
+        padding-bottom: 30px;
+        display: flex;
+        align-items: center;
+        width: 100%;
+
+        overflow: hidden;
+        background: var(--color-highlight);
+    }
+
+    .laufband-spur {
+        display: flex;
+        width: max-content;
+        animation: laufen var(--laufband-dauer) linear infinite;
+    }
+
+    .laufband-text {
+        padding-right: 1.5em; /* Abstand bis zur nächsten Wiederholung */
+        font-family: var(--font-text);
+        font-size: var(--size-gross);
+        letter-spacing: -5%;
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    @keyframes laufen {
+        from {
+            translate: 0 0;
+        }
+        to {
+            translate: -50% 0;
+        }
+    }
+
+    /* Wer im System „Bewegung reduzieren“ eingestellt hat, bekommt stehenden Text */
+    @media (prefers-reduced-motion: reduce) {
+        .laufband-spur {
+            animation: none;
+        }
+    }
+</style>

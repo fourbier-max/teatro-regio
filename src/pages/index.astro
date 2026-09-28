@@ -1,11 +1,46 @@
 ---
 import Lauftext from '../components/Lauftext.astro';
+import Auftakt from '../components/Auftakt.astro';
+import Titel2 from '../components/Titel2.astro';
+import Dachzeile from '../components/Dachzeile.astro';
+import Datum from '../components/Datum.astro';
+import UeberUns from '../texte/ueber-uns.mdx';
+import Wegkreuzungen from '../texte/auf-wegkreuzungen.mdx';
+import Pfade from '../texte/auf-pfaden.mdx';
+import Kochen from '../texte/kochprojekt.mdx';
+import Vergangen from '../texte/vergangen.mdx';
+import LaufbandText from '../texte/laufband.mdx';
+import TerminText from '../texte/termin.mdx';
 import Layout from '../layouts/Layout.astro';
+import Menu from '../components/Menu.astro';
+import Kopf from '../components/Kopf.astro';
+import Film from '../components/Film.astro';
+import Termin from '../components/Termin.astro';
+import Laufband from '../components/Laufband.astro';
+import Flaeche from '../components/Flaeche.astro';
+import Galerie1 from '../components/Galerie1.astro';
+import Galerie2 from '../components/Galerie2.astro';
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
 <Layout>
-	<Lauftext />
+	<Kopf />
+	<Laufband><LaufbandText /></Laufband>
+	<Lauftext><UeberUns components={{ em: Auftakt }} /></Lauftext>
+	<Film />
+	<Termin><TerminText components={{ h3: Datum }} /></Termin>
+	<Flaeche />
+	<Lauftext><Wegkreuzungen components={{ h2: Titel2, em: Auftakt }} /></Lauftext>
+	<Galerie1 />
+	<Flaeche />
+	<Lauftext><Pfade components={{ h2: Titel2, em: Auftakt }} /></Lauftext>
+	<Flaeche />
+	<Lauftext><Kochen components={{ h2: Titel2, h3: Dachzeile, em: Auftakt }} /></Lauftext>
+	<Galerie2 />
+	<Flaeche />
+	<Lauftext><Vergangen components={{ h2: Titel2, h3: Datum, em: Auftakt }} /></Lauftext>
+
+	<Menu />
 </Layout>

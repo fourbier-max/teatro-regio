@@ -1,0 +1,108 @@
+---
+import { Image } from 'astro:assets';
+import sturm1 from '../assets/img/sturm_1.jpg';
+import sturm2 from '../assets/img/sturm_2.jpg';
+import sturm3 from '../assets/img/sturm_3.jpg';
+import himmelblau1 from '../assets/img/himmelblau_1.jpg';
+import himmelblau2 from '../assets/img/himmelblau_2.jpg';
+import spaziergang1 from '../assets/img/spaziergang_1.jpg';
+import spaziergang3 from '../assets/img/spaziergang_3.jpg';
+import spaziergang2 from '../assets/img/spaziergang_2.jpg';
+
+const bilder = [
+    { src: sturm1, titel: 'Der Sturm, 2023' },
+    { src: sturm2, titel: 'Der Sturm, 2023' },
+    { src: sturm3, titel: 'Der Sturm, 2023' },
+    { src: himmelblau1, titel: 'Himmelblau, 2024' },
+    { src: himmelblau2, titel: 'Himmelblau, 2024' },
+    { src: spaziergang1, titel: 'Der schönste Tag, 2022' },
+    { src: spaziergang3, titel: 'Der schönste Tag, 2022' },
+    { src: spaziergang2, titel: 'Der schönste Tag, 2022' },
+];
+---
+
+<div class="galerie swiper">
+    <div class="swiper-wrapper">
+        {bilder.map((bild) => (
+            <figure class="swiper-slide">
+                <Image src={bild.src} alt="" widths={[600, 1200]} sizes="(max-width: 600px) 90vw, 800px" />
+                <figcaption class="label">{bild.titel}</figcaption>
+            </figure>
+        ))}
+    </div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+</div>
+
+<script>
+    import Swiper from 'swiper';
+    import { Navigation, Keyboard } from 'swiper/modules';
+    import 'swiper/css';
+    import 'swiper/css/navigation';
+
+    document.querySelectorAll<HTMLElement>('.galerie').forEach((el) => {
+        new Swiper(el, {
+            modules: [Navigation, Keyboard],
+            slidesPerView: 'auto',
+            spaceBetween: 12,
+            centeredSlides: true,
+            loop: true,
+            keyboard: { enabled: true },
+            navigation: {
+                nextEl: el.querySelector<HTMLElement>('.swiper-button-next'),
+                prevEl: el.querySelector<HTMLElement>('.swiper-button-prev'),
+            },
+        });
+    });
+</script>
+
+<style>
+    .galerie {
+        /* Pfeile über Swipers eigene Variablen – direktes left/right/margin-top überschreibt Swiper */
+        --swiper-navigation-color: black;
+        --swiper-navigation-size: 60px;
+        --swiper-navigation-sides-offset: var(--inset);
+        /* Pfeile mittig zum Bild, nicht zum ganzen Slider (Bildunterschrift abziehen) */
+        --swiper-navigation-top-offset: calc(50% - var(--caption-height) / 2);
+        --galerie-height: 90vh;
+        --caption-height: 30px;
+        box-sizing: border-box;
+        width: 100%;
+        height: var(--galerie-height);
+        padding: 12px 0;
+    }
+    .swiper-button-prev,
+    .swiper-button-next {
+        box-sizing: border-box;
+        padding: 18px;
+        background: var(--color-clickable);
+        border-radius: 40px;
+        transition: color 0.2s;
+    }
+    .swiper-button-prev:hover,
+    .swiper-button-next:hover {
+        color: white;
+    }
+    .swiper-slide {
+        width: auto;
+        margin: 0;
+    }
+    .swiper-slide img {
+        display: block;
+        width: auto;
+        /* Galeriehöhe minus Innenabstand (2 × 12px) und Bildunterschrift */
+        height: calc(var(--galerie-height) - 24px - var(--caption-height));
+        max-width: 90vw;
+        object-fit: cover;
+    }
+    figcaption {
+        box-sizing: border-box;
+        height: var(--caption-height);
+        padding-top: 6px;
+    }
+    @media (max-width: 600px) {
+        .galerie {
+            --galerie-height: 50vh;
+        }
+    }
+</style>

@@ -1,0 +1,16 @@
+<!-- Kleine eckige Farbfläche für Daten/Jahreszahlen. In Markdown als ### – zuordnen mit h3: Datum -->
+<h3 class="datum"><slot /></h3>
+
+<style>
+    .datum {
+        align-self: flex-start; /* nur so breit wie der Text, nicht über die ganze Zeile */
+        /* klein als Standard (z. B. Jahreszahlen bei Vergangen); Termin setzt --datum-padding größer */
+        padding: var(--datum-padding, 0.15em 0.4em);
+        background: var(--color-highlight);
+        font-family: var(--font-text);
+        font-size: var(--size-lauftext);
+        font-weight: 400;
+        line-height: 1.2;
+        margin-top: 30px;
+    }
+</style>

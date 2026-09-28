@@ -1,0 +1,205 @@
+---
+import { getImage } from 'astro:assets';
+
+// Alle Köpfe aus dem Ordner (10.jpg war auf der alten Seite nicht dabei)
+const dateien = import.meta.glob<{ default: ImageMetadata }>('../assets/img/koepf/*.jpg', { eager: true });
+const koepfe = await Promise.all(
+    Object.entries(dateien)
+        .filter(([pfad]) => !pfad.endsWith('/10.jpg'))
+        .map(([, bild]) => getImage({ src: bild.default, width: 400, format: 'webp' })),
+);
+const urls = koepfe.map((bild) => bild.src);
+
+// Höchstens 24 Plätze (8 Spalten × 3 Reihen), auf schmalen Bildschirmen blendet das CSS welche aus
+const plaetze = urls.slice(0, 24);
+---
+
+<section class="film" data-koepfe={JSON.stringify(urls)}>
+    {plaetze.map((src) => <img class="film-kopf" src={src} alt="" width="400" height="400" loading="lazy" />)}
+
+    <div class="film-video">
+        <iframe
+            src="https://player.vimeo.com/video/1075310823?h=4a6becee4e&background=0&muted=0&loop=1&title=0&byline=0&portrait=0"
+            allow="autoplay; fullscreen; picture-in-picture"
+            title="Ich spiele Theater, weil"></iframe>
+        <div class="film-zeit label"><span class="film-zeit-aktuell">0:00</span> / <span class="film-zeit-dauer">0:00</span></div>
+    </div>
+
+    <button class="film-knopf" type="button">Film abspielen</button>
+</section>
+
+<script>
+    import Player from '@vimeo/player';
+
+    document.querySelectorAll<HTMLElement>('.film').forEach((film) => {
+        // --- Köpfe: zufällig mischen und immer wieder einzelne austauschen ---
+        const urls: string[] = JSON.parse(film.dataset.koepfe!);
+        const plaetze = [...film.querySelectorAll<HTMLImageElement>('.film-kopf')];
+
+        const gemischt = urls.slice().sort(() => Math.random() - 0.5);
+        plaetze.forEach((platz, i) => (platz.src = gemischt[i]));
+
+        function zufall<T>(liste: T[]): T {
+            return liste[Math.floor(Math.random() * liste.length)];
+        }
+
+        // nur Plätze, die gerade sichtbar sind (per CSS ausgeblendete haben kein offsetParent)
+        function sichtbarePlaetze() {
+            return plaetze.filter((platz) => platz.offsetParent !== null);
+        }
+
+        // Kopf auf diesem Platz gegen einen gerade nicht gezeigten tauschen
+        function tauscheKopf(platz: HTMLImageElement) {
+            const gezeigt = new Set(sichtbarePlaetze().map((p) => p.getAttribute('src')));
+            const frei = urls.filter((url) => !gezeigt.has(url));
+            if (frei.length > 0) platz.src = zufall(frei);
+        }
+
+        function wechselBild() {
+            const sichtbar = sichtbarePlaetze();
+            if (sichtbar.length > 0) tauscheKopf(zufall(sichtbar));
+
+            const z = Math.random();
+            setTimeout(wechselBild, z * z * 1000 + 500);
+        }
+        wechselBild();
+
+        // Der Kopf unter der Maus wechselt beim Drüberfahren
+        plaetze.forEach((platz) => platz.addEventListener('mouseenter', () => tauscheKopf(platz)));
+
+        // --- Video ---
+        const video = film.querySelector<HTMLElement>('.film-video')!;
+        const knopf = film.querySelector<HTMLButtonElement>('.film-knopf')!;
+        const zeitAktuell = film.querySelector<HTMLElement>('.film-zeit-aktuell')!;
+        const zeitDauer = film.querySelector<HTMLElement>('.film-zeit-dauer')!;
+        const player = new Player(film.querySelector('iframe')!);
+        let spielt = false;
+
+        function zeit(sekunden: number) {
+            const min = Math.floor(sekunden / 60);
+            const sek = Math.floor(sekunden % 60).toString().padStart(2, '0');
+            return `${min}:${sek}`;
+        }
+
+        knopf.addEventListener('click', () => {
+            if (spielt) {
+                player.pause();
+            } else {
+                video.classList.add('is-an');
+                player.play();
+            }
+        });
+
+        player.on('play', () => {
+            spielt = true;
+            video.classList.add('is-an');
+            knopf.textContent = '⏸︎';
+        });
+
+        player.on('pause', () => {
+            spielt = false;
+            video.classList.remove('is-an');
+            knopf.textContent = 'Film abspielen';
+        });
+
+        player.getDuration().then((dauer) => (zeitDauer.textContent = zeit(dauer)));
+        player.on('timeupdate', (daten) => (zeitAktuell.textContent = zeit(daten.seconds)));
+
+        // Wegscrollen hält den Film an
+        new IntersectionObserver(([eintrag]) => {
+            if (!eintrag.isIntersecting && spielt) player.pause();
+        }).observe(film);
+    });
+</script>
+
+<style>
+    .film {
+        --knopf-hoehe: clamp(50px, 40px + 2vw, 60px);
+
+        position: relative;
+        display: grid;
+        grid-template-rows: repeat(3, auto);
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        width: 100%;
+        background: gray;
+    }
+
+    .film-kopf {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1;
+    }
+
+    /* 8 / 7 / 6 / 5 Spalten je nach Fensterbreite */
+    .film-kopf:nth-of-type(n + 25) {
+        display: none;
+    }
+    @media (max-width: 800px) {
+        .film-kopf:nth-of-type(n + 22) {
+            display: none;
+        }
+    }
+    @media (max-width: 700px) {
+        .film-kopf:nth-of-type(n + 19) {
+            display: none;
+        }
+    }
+    @media (max-width: 600px) {
+        .film-kopf:nth-of-type(n + 16) {
+            display: none;
+        }
+    }
+
+    /* Video liegt über den Köpfen und füllt die Fläche (Format 8:3, bei weniger Spalten seitlich beschnitten) */
+    .film-video {
+        position: absolute;
+        inset: 0;
+        display: none;
+        overflow: hidden;
+        container-type: size;
+        background: black;
+    }
+    .film-video.is-an {
+        display: block;
+    }
+    .film-video iframe {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: max(100cqw, 100cqh * 8 / 3);
+        height: max(100cqh, 100cqw * 3 / 8);
+        border: 0;
+        translate: -50% -50%;
+        scale: 1.06; /* schneidet die dünnen Ränder des Videos ab */
+    }
+
+    .film-zeit {
+        position: absolute;
+        left: var(--inset);
+        bottom: calc(var(--inset) + var(--knopf-hoehe) + 8px);
+        color: white;
+    }
+
+    .film-knopf {
+        position: absolute;
+        left: var(--inset);
+        bottom: var(--inset);
+        z-index: 1;
+        height: var(--knopf-hoehe);
+        padding: 0 24px;
+        border: 0;
+        border-radius: 30px;
+        background: var(--color-clickable);
+        color: black;
+        font-family: var(--font-text);
+        font-size: clamp(22px, 20px + 0.5vw, 26px);
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .film-knopf:hover,
+    .film-knopf:focus-visible {
+        color: white;
+    }
+</style>

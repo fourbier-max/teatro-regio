@@ -1,14 +1,38 @@
 /* Schriften werden über die Astro Fonts API geladen (astro.config.mjs + <Font /> im Layout). */
 
+/* Globale Werte – in allen Komponenten nutzbar, z. B. background: var(--color-clickable); */
+:root {
+  --color-clickable: rgb(163, 205, 66);  
+  /* --color-clickable: #e17d93; */
+  --color-highlight: #e17d93;
+  --inset: clamp(12px, 3vw, 40px); /* Abstand zum Fensterrand */
+
+  /* Schriftgrößen */
+  --size-gross: clamp(30px, 18.03px + 3.1925vw, 64px); /* Laufband, große Schriftzüge: 30px (375px Fenster) bis 64px (1440px) */
+  --size-lauftext: 34px;
+}
+
+@media (max-width: 600px) {
+  :root {
+    --size-lauftext: 26px;
+  }
+}
+
 html,
 body {
   margin: 0;
   width: 100%;
   height: 100%;
 }
+* {
+  margin: 0;
+  padding: 0;
+}
 
 body {
   font-family: var(--font-text);
+  /* ausdrücklich gesetzt, damit mix-blend-mode (Titel) mit Weiß verrechnen kann */
+  background: white;
 }
 
 h1,
@@ -18,4 +42,13 @@ h4,
 h5,
 h6 {
   font-family: var(--font-heading);
+}
+
+/* Kleine Beschriftung: Dachzeilen und Bild-Labels der Galerien */
+.label {
+  font-family: var(--font-text);
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 400;
+  letter-spacing: normal;
 }
