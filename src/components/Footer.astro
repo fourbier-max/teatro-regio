@@ -26,7 +26,14 @@ const jahr = new Date().getFullYear();
 
         <div class="footer-karte" data-marker={wald.src}>
             <div class="karte"></div>
-            <div class="karte-knoepfe">
+            {/* Mapbox erst nach Klick laden (Datenschutz) */}
+            <div class="karte-hinweis">
+                <button type="button" class="karte-laden label">Karte laden</button>
+                <p class="karte-datenschutz">
+                    Es werden Daten an Mapbox übertragen, siehe <a href="#datenschutz">Datenschutzerklärung.</a>
+                </p>
+            </div>
+            <div class="karte-knoepfe" hidden>
                 <button type="button" class="karte-knopf" data-aktion="raus" aria-label="Herauszoomen">−</button>
                 <button type="button" class="karte-knopf" data-aktion="home" aria-label="Zurück zum Start">•</button>
                 <button type="button" class="karte-knopf" data-aktion="rein" aria-label="Hineinzoomen">+</button>
@@ -39,7 +46,7 @@ const jahr = new Date().getFullYear();
     const MITTE: [number, number] = [9.65244, 51.74566];
     const ZOOM = 7.2;
 
-    // Mapbox ist groß (~1 MB) – erst laden, wenn der Footer in die Nähe kommt
+    // Mapbox (~1 MB, überträgt Daten in die USA) wird erst nach Klick auf „Karte laden“ geholt
     async function karteStarten(container: HTMLElement) {
         // Token kommt aus .env (lokal) bzw. der GitHub-Variable PUBLIC_MAPBOX_TOKEN (Deploy)
         const token = import.meta.env.PUBLIC_MAPBOX_TOKEN;
@@ -93,15 +100,11 @@ const jahr = new Date().getFullYear();
     }
 
     document.querySelectorAll<HTMLElement>('.footer-karte').forEach((container) => {
-        const beobachter = new IntersectionObserver(
-            ([eintrag]) => {
-                if (!eintrag.isIntersecting) return;
-                beobachter.disconnect();
-                karteStarten(container);
-            },
-            { rootMargin: '400px' },
-        );
-        beobachter.observe(container);
+        container.querySelector('.karte-laden')!.addEventListener('click', () => {
+            container.querySelector<HTMLElement>('.karte-hinweis')!.hidden = true;
+            container.querySelector<HTMLElement>('.karte-knoepfe')!.hidden = false;
+            karteStarten(container);
+        });
     });
 </script>
 
@@ -147,6 +150,41 @@ const jahr = new Date().getFullYear();
     }
     .karte {
         height: 400px;
+    }
+
+    /* Platzhalter über der (noch leeren) Karte */
+    .karte-hinweis {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 1px solid color-mix(in srgb, var(--color-clickable) 40%, transparent);
+    }
+    .karte-hinweis[hidden],
+    .karte-knoepfe[hidden] {
+        display: none;
+    }
+    .karte-laden {
+        padding: 8px 20px;
+        border: none; /* sonst greift die Standard-Border des Browsers */
+        background: var(--color-clickable);
+        border-radius: 3rem;
+        color: black;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .karte-laden:hover {
+        color: white;
+    }
+    .karte-datenschutz {
+        font-size: 12px;
+        opacity: 0.6;
+    }
+    .karte-datenschutz a {
+        color: inherit;
     }
 
     /* Der Marker wird per Script erzeugt, daher :global */

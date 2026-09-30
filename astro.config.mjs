@@ -1,13 +1,12 @@
 import { defineConfig, fontProviders } from "astro/config";
 
 import mdx from "@astrojs/mdx";
+import sitemap from "@astrojs/sitemap";
 
 const fontDir = "./src/assets/fonts";
 
 export default defineConfig({
-  // GitHub Pages: https://fourbier-max.github.io/teatro-regio/
-  site: "https://fourbier-max.github.io",
-  base: "/teatro-regio",
+  site: "https://teatro-regio.de",
 
   fonts: [
     {
@@ -46,5 +45,13 @@ export default defineConfig({
     },
   ],
 
-  integrations: [mdx()],
+  integrations: [mdx(), sitemap()],
+
+  vite: {
+    // Nur Dev-Server: diese Pakete gleich beim Start vorbereiten. Sonst entdeckt Vite sie
+    // erst beim (Nach-)Laden, baut den Cache neu und die alte Adresse liefert einen Fehler (504).
+    optimizeDeps: {
+      include: ["mapbox-gl", "swiper", "swiper/modules", "@vimeo/player"],
+    },
+  },
 });

@@ -5,9 +5,9 @@ interface Props {
 const { ueberBild = false } = Astro.props;
 ---
 
-<!-- Platzhalter im Seitenfluss: hält oben Platz frei, der Titel selbst ist fixiert -->
+{/* Platzhalter im Seitenfluss: hält oben Platz frei, der Titel selbst ist fixiert */}
 <header class:list={['kopf', { 'kopf-ueber-bild': ueberBild }]} id="start">
-    <h1 class="kopf-titel">teatro<span class="kopf-kursiv">regio</span></h1>
+    <h1 class="kopf-titel">teatro<span class="kopf-luecke"> </span><span class="kopf-kursiv">regio</span></h1>
 </header>
 
 <script>
@@ -23,10 +23,17 @@ const { ueberBild = false } = Astro.props;
 
 <style>
     .kopf {
-        --kopf-gross: min(120px, 14vw); /* auf schmalen Handys kleiner, damit es in die Zeile passt */
+        --kopf-gross: min(120px, 14vw);
         --kopf-klein: 60px;
 
         height: calc(var(--kopf-gross) + 2 * var(--inset));
+    }
+    @media (max-width: 450px) {
+        .kopf {
+            /* ganze Fensterbreite: „teatro regio“ ist ca. 4,71em breit → 21vw ≈ 99 % */
+            --kopf-gross: 21vw;
+            --kopf-klein: var(--kopf-gross); /* beim Scrollen nicht verkleinern */
+        }
     }
     .kopf-ueber-bild {
         height: 0;
@@ -52,6 +59,11 @@ const { ueberBild = false } = Astro.props;
         transition:
             font-size 0.3s ease,
             top 0.3s ease;
+    }
+
+    /* Leerzeichen ohne Breite: optisch „teatroregio“, für Google und Screenreader „teatro regio“ */
+    .kopf-luecke {
+        font-size: 0;
     }
 
     .kopf-kursiv {

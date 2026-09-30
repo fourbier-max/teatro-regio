@@ -4,9 +4,9 @@
 const inhalt = await Astro.slots.render('default');
 ---
 
-<!-- Der Text steht zweimal hintereinander: Wenn die erste Kopie ganz durchgelaufen ist,
+{/* Der Text steht zweimal hintereinander: Wenn die erste Kopie ganz durchgelaufen ist,
      steht die zweite genau an ihrer Stelle – so springt die Animation unsichtbar zurück.
-     Die zweite Kopie ist für Screenreader ausgeblendet, damit der Satz nur einmal vorgelesen wird. -->
+     Die zweite Kopie ist für Screenreader ausgeblendet, damit der Satz nur einmal vorgelesen wird. */}
 <section class="laufband">
     <div class="laufband-spur">
         <div class="laufband-text" set:html={inhalt} />

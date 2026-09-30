@@ -1,7 +1,7 @@
-<!-- Inhalt als Markdown, z. B. <Termin><TerminText /></Termin>:
+{/* Inhalt als Markdown, z. B. <Termin><TerminText /></Termin>:
      ### Datum  →  kleine Farbfläche (Komponente Datum, zuordnen mit h3: Datum)
      ## Titel   →  großer Schriftzug (wie Laufband)
-     Absatz     →  Lauftext-Größe -->
+     Absatz     →  Lauftext-Größe */}
 <section class="termin" id={Astro.props.id}>
     <slot />
 </section>
@@ -14,7 +14,9 @@
         gap: 12px;
         max-width: 1000px;
         margin: auto;
-        margin-top: 100px;
+        margin-top: var(--abstand-oben);
+        --abstand-oben: 100px;
+        scroll-margin-top: var(--abstand-oben); /* Sprung über „Aktuelle Termine“: Unterkante des Films genau am oberen Fensterrand */
         padding: 12px;
         font-family: var(--font-text);
         font-weight: 400;

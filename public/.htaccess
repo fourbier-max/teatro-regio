@@ -1,0 +1,17 @@
+# Browser-Cache
+# HTML: 5 Minuten, damit Änderungen schnell sichtbar sind.
+# _astro/: 1 Jahr – die Dateinamen enthalten einen Hash und ändern sich bei jeder Änderung.
+# Alles andere (z. B. Favicon): 1 Tag.
+
+<IfModule mod_headers.c>
+    Header set Cache-Control "public, max-age=86400"
+
+    # auch Aufrufe ohne Dateinamen (…/teatro-regio/), die index.html liefern
+    <If "%{REQUEST_URI} =~ m#(/|\.html?)$#">
+        Header set Cache-Control "public, max-age=300"
+    </If>
+
+    <If "%{REQUEST_URI} =~ m#/_astro/#">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </If>
+</IfModule>

@@ -12,12 +12,12 @@ interface Props {
 const { id, klein = false } = Astro.props;
 ---
 
-<!-- Die Bildfläche gehört zum Bereich: Sie erscheint nur, wenn er angezeigt wird -->
+{/* Die Bildfläche gehört zum Bereich: Sie erscheint nur, wenn er angezeigt wird */}
 <section class="zusatz" id={id} hidden>
     <Flaeche />
     <div class:list={['zusatz-inhalt', { 'zusatz-klein': klein }]}>
         <slot />
-        <button type="button" class="zusatz-schliessen label">Schließen ×</button>
+        <button type="button" class="zusatz-schliessen label">schließen ×</button>
     </div>
 </section>
 
@@ -40,7 +40,7 @@ const { id, klein = false } = Astro.props;
         true,
     );
 
-    // Direkter Aufruf, z. B. …/teatro-regio/#impressum
+    // Direkter Aufruf, z. B. teatro-regio.de/#impressum
     const start = bereiche.find((bereich) => `#${bereich.id}` === location.hash);
     if (start) {
         zeige(start);

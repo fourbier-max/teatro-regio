@@ -7,6 +7,7 @@
   --color-highlight: #e17d93;
   --color-dunkel: #272a40; /* Footer */
   --inset: clamp(12px, 3vw, 40px); /* Abstand zum Fensterrand */
+  --knopf: clamp(50px, 40px + 2vw, 60px); /* runde Knöpfe: Breite Menü-Button, Höhe Film-Knopf, Galerie-Pfeile */
 
   /* Schriftgrößen */
   --size-gross: clamp(30px, 18.03px + 3.1925vw, 64px); /* Laufband, große Schriftzüge: 30px (375px Fenster) bis 64px (1440px) */
