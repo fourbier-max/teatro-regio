@@ -79,6 +79,11 @@ const { id, klein = false } = Astro.props;
         letter-spacing: normal;
     }
 
+    /* lange Links (z. B. in der Datenschutzerklärung) dürfen umbrechen, sonst sprengen sie auf dem Handy die Breite */
+    .zusatz :global(a) {
+        overflow-wrap: anywhere;
+    }
+
     .zusatz :global(h2) {
         margin-bottom: 8px;
         font-family: var(--font-text);

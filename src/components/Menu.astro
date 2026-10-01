@@ -56,18 +56,29 @@
 		color: inherit;
 		font: inherit;
 		font-size: clamp(22px, 20px + 0.5vw, 26px);
-		writing-mode: vertical-rl;
-		transform: rotate(180deg);
 		cursor: pointer;
 		opacity: 0;
 		visibility: hidden;
 		transition: opacity 0.5s, visibility 0s 0.5s, color 0.2s;
 	}
 
-	/* Nur der Schriftzug wird verschoben, die Klickfläche bleibt.
-	   Der Button ist um 180° gedreht, daher +20px = optisch 20px nach links. */
+	/* „menu“ waagerecht gesetzt und nur gedreht (nicht writing-mode: vertical-rl –
+	   den setzen Safari und Firefox unterschiedlich, der Schriftzug saß dann schief).
+	   „menu“ hat nur Kleinbuchstaben ohne Ober-/Unterlängen: optische Mitte = halbe x-Höhe. */
 	.menu-toggle-label {
-		translate: 10px 0;
+		display: block;
+		line-height: 1;
+		white-space: nowrap;
+		rotate: -90deg;
+		/* Zeile ist 1em hoch, die x-Höhe sitzt darin 0,105em zu tief → nach dem Drehen nach links schieben */
+		translate: -0.105em 0;
+	}
+	/* Wo möglich, die Zeile exakt auf x-Höhe bis Grundlinie zuschneiden: dann ist keine Korrektur nötig */
+	@supports (text-box: trim-both ex alphabetic) {
+		.menu-toggle-label {
+			text-box: trim-both ex alphabetic;
+			translate: none;
+		}
 	}
 
 	.is-closed .menu-toggle {
